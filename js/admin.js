@@ -181,6 +181,63 @@ function clearDailySales() {
     }
 }
 
+
+// ==========================================
+// 🎯 ระบบดูรายละเอียดบิลโต๊ะ
+// ==========================================
+function viewTableDetails(tableNo) {
+    let orders = JSON.parse(localStorage.getItem('activeOrders')) || [];
+    // กรองเอาเฉพาะออเดอร์ของโต๊ะที่กด
+    let tableOrders = orders.filter(o => o.table === tableNo);
+    
+    let itemsContainer = document.getElementById('modal-table-items');
+    itemsContainer.innerHTML = '';
+    
+    let grandTotal = 0;
+
+    // เผื่อลูกค้าสั่งหลายรอบ (เช่น สั่งของคาว แล้วสั่งของหวานเพิ่มทีหลัง)
+    tableOrders.forEach(order => {
+        let orderBlock = `<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ddd;">
+            <div style="font-size: 0.85rem; color: #777;">เวลาสั่ง: ${order.time}</div>`;
+        
+        order.items.forEach(item => {
+            orderBlock += `
+                <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                    <div><span style="font-weight:bold; color:#0A66C2;">${item.qty}x</span> ${item.name}</div>
+                    <div>฿${(item.price * item.qty).toLocaleString()}</div>
+                </div>`;
+        });
+        
+        orderBlock += `</div>`;
+        itemsContainer.innerHTML += orderBlock;
+        grandTotal += order.total;
+    });
+
+    // สรุปยอดรวมด้านล่าง
+    itemsContainer.innerHTML += `
+        <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-top: 10px;">
+            <span>ยอดรวมทั้งสิ้น:</span>
+            <span style="color: #dc3545;">฿${grandTotal.toLocaleString()}</span>
+        </div>`;
+
+    // เปลี่ยนชื่อหัว Popup
+    document.getElementById('modal-table-title').innerText = `🍽️ รายการอาหาร โต๊ะ ${tableNo}`;
+    
+    // ตั้งค่าปุ่มเช็คบิลใน Popup
+    const checkoutBtn = document.getElementById('modal-checkout-btn');
+    checkoutBtn.onclick = function() {
+        closeTableModal();
+        checkoutTable(tableNo);
+    };
+
+    // โชว์ Popup
+    document.getElementById('table-detail-modal').style.display = 'flex';
+}
+
+// ฟังก์ชันปิด Popup
+function closeTableModal() {
+    document.getElementById('table-detail-modal').style.display = 'none';
+}
 // เรียกทำงาน
 setInterval(renderTableManagement, 3000);
 renderTableManagement();
