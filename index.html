@@ -16,10 +16,12 @@
     </div>
 
     <div class="ai-section">
-        <div class="ai-title"><i class="fa-solid fa-robot"></i> ผู้ช่วยแนะนำอาหาร</div>
+        <div class="ai-title"><i class="fa-solid fa-robot"></i> ผู้ช่วยแนะนำอาหาร (AI Waiter)</div>
         <div class="ai-input-group">
-            <input type="text" class="ai-input" placeholder="ขอเมนูคุมแคลอรี...">
-            <button class="ai-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            <input type="text" id="ai-input-text" class="ai-input" placeholder="เช่น สูง 170 หนัก 75 อยากคุมน้ำหนัก ทานอะไรดี?">
+            <button class="ai-btn" onclick="askAI()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        <div id="ai-response-box" style="display: none; margin-top: 15px; padding: 15px; background: white; border-radius: 8px; font-size: 0.9rem; color: #333; line-height: 1.5;">
         </div>
     </div>
 
