@@ -65,5 +65,19 @@
 
     <script src="js/data.js"></script>
     <script src="js/admin.js"></script>
+
+    <div class="cart-modal" id="table-detail-modal" style="display: none; align-items: center;">
+        <div class="cart-content" style="max-width: 500px; margin: auto; border-radius: 20px; animation: slideUp 0.3s ease;">
+            <div class="cart-header">
+                <h2 id="modal-table-title">🍽️ รายการอาหาร โต๊ะ --</h2>
+                <span class="close-cart" onclick="closeTableModal()"><i class="fa-solid fa-xmark"></i> ปิด</span>
+            </div>
+            
+            <div id="modal-table-items" style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto;">
+            </div>
+            
+            <button class="confirm-order-btn" id="modal-checkout-btn">เช็คบิลโต๊ะนี้</button>
+        </div>
+    </div>
 </body>
 </html>
