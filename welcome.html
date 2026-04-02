@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยินดีต้อนรับ - The Gourmet AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* CSS เฉพาะกิจสำหรับกล่อง Demo Panel */
+        .demo-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px dashed #00B4D8;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            text-align: left;
+            max-width: 250px;
+            z-index: 1000;
+        }
+        .demo-panel h3 { font-size: 1rem; color: #00B4D8; margin-bottom: 10px; }
+        .demo-panel p { font-size: 0.8rem; color: #ccc; margin-bottom: 15px; }
+        .demo-link-btn {
+            display: block;
+            background: #212529;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            border: 1px solid #444;
+        }
+        .demo-link-btn:hover { background: #0A66C2; border-color: #0A66C2; }
+    </style>
+</head>
+<body class="welcome-body">
+
+    <div class="demo-panel">
+        <h3>👀 สำหรับผู้ทดสอบระบบ</h3>
+        <p>เพื่อดูการทำงานแบบ Real-time กรุณากดเปิด 2 หน้านี้แยกไว้คนละแท็บครับ</p>
+        <a href="kitchen.html" target="_blank" class="demo-link-btn"><i class="fa-solid fa-fire-burner"></i> เปิดหน้าจอเชฟ (Kitchen)</a>
+        <a href="admin.html" target="_blank" class="demo-link-btn"><i class="fa-solid fa-gear"></i> เปิดหน้าจัดการร้าน (Admin)</a>
+    </div>
+
+    <div class="welcome-container">
+        <h1>🍽️ The Gourmet AI</h1>
+        <p style="color: #aaa; margin-bottom: 20px; font-size: 0.9rem;">กรุณาระบุเลขโต๊ะของคุณเพื่อเริ่มสั่งอาหาร</p>
+        <input type="number" id="table-input" placeholder="ตัวอย่าง: 09" max="99">
+        <button class="btn-start-order" onclick="startOrder()">เข้าสู่หน้าร้าน (ลูกค้า)</button>
+    </div>
+
+    <script>
+        function startOrder() {
+            const tableNo = document.getElementById('table-input').value;
+            if(tableNo.trim() === '') return alert('กรุณาใส่เลขโต๊ะก่อนครับ');
+            localStorage.setItem('customerTable', tableNo);
+            window.location.href = 'index.html'; // เปลี่ยนไปหน้า index.html ในแท็บปัจจุบัน
+        }
+    </script>
+</body>
+</html>

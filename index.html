@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สั่งอาหาร - The Gourmet AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header">
+        <h2>The Gourmet AI</h2>
+        <div class="table-badge" id="display-table">โต๊ะ --</div>
+        <button onclick="showHistory()">ประวัติการสั่ง</button>
+    </div>
+
+    <div class="ai-section">
+        <div class="ai-title"><i class="fa-solid fa-robot"></i> ผู้ช่วยแนะนำอาหาร</div>
+        <div class="ai-input-group">
+            <input type="text" class="ai-input" placeholder="ขอเมนูคุมแคลอรี...">
+            <button class="ai-btn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="category-tabs">
+        <button class="cat-btn active" onclick="filterMenu('all', this)">ทั้งหมด</button>
+        <button class="cat-btn" onclick="filterMenu('main', this)">จานหลัก</button>
+        <button class="cat-btn" onclick="filterMenu('healthy', this)">สายสุขภาพ</button>
+    </div>
+
+    <div class="menu-container" id="menu-list">
+        </div>
+
+    <div class="floating-cart" id="floating-cart" style="display: none;" onclick="openCart()">
+        <div id="cart-summary"></div>
+    </div>
+
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>รายการอาหารของคุณ</h2>
+                <span class="close-cart" onclick="closeCart()"><i class="fa-solid fa-xmark"></i> ปิด</span>
+            </div>
+            <div id="cart-items-container">
+                </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-top: 15px;">
+                <span>ยอดรวมทั้งหมด:</span>
+                <span id="cart-total-price">฿ 0</span>
+            </div>
+            <button class="confirm-order-btn" onclick="submitOrder()">ส่งออเดอร์เข้าครัว</button>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
