@@ -17,14 +17,31 @@
     <div class="admin-container">
         <div class="admin-table-card">
             <h2>💰 จัดการโต๊ะ & เช็คบิล</h2>
-            <div id="active-tables-list">
-                </div>
+            <div id="active-tables-list"></div>
         </div>
         
-        <div class="admin-table-card" style="background: #121212; color: white; text-align: center;">
-            <h2 style="color: #aaa; border-bottom: 1px solid #333;">📊 สรุปรายได้วันนี้</h2>
-            <h1 id="daily-income-display" style="color: #00e676; font-size: 3rem; margin: 20px 0;">฿ 0</h1>
-            <button onclick="clearDailySales()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> ล้างข้อมูลเริ่มวันใหม่</button>
+        <div class="admin-table-card" style="background: #121212; color: white; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="color: #aaa; border-bottom: 1px solid #333; padding-bottom: 10px;">📊 สรุปรายได้ "วันนี้"</h2>
+            <h1 id="daily-income-display" style="color: #00e676; font-size: 3.5rem; margin: 20px 0;">฿ 0</h1>
+            <p style="color: #777; font-size: 0.9rem;">ระบบจะคำนวณยอดเฉพาะของวันนี้ให้อัตโนมัติ</p>
+        </div>
+    </div>
+
+    <div class="admin-container" style="margin-top: 0;">
+        <div class="admin-table-card" style="grid-column: 1 / -1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2>📈 ประวัติยอดขายย้อนหลัง</h2>
+                <select id="month-selector" class="admin-input" style="width: auto; margin: 0; min-width: 200px; font-weight: bold;" onchange="renderSalesHistory()">
+                    <option value="all">ดูทุกเดือน</option>
+                </select>
+            </div>
+
+            <div style="background: #e0f7fa; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid #b2ebf2;">
+                <h3 style="color: #00838f;">ยอดขายรวม (ตามช่วงเวลาที่เลือก)</h3>
+                <h1 id="history-total-display" style="color: #006064; font-size: 2.5rem; margin: 10px 0;">฿ 0</h1>
+            </div>
+
+            <div id="sales-history-list"></div>
         </div>
     </div>
 
@@ -33,25 +50,19 @@
             <h2><i class="fa-solid fa-plus"></i> เพิ่ม/แก้ไข เมนู</h2>
             <form id="menu-form">
                 <input type="hidden" id="menu-id">
-                
                 <label>ชื่ออาหาร</label>
                 <input type="text" id="menu-name" class="admin-input" required>
-                
                 <label>รายละเอียด</label>
                 <input type="text" id="menu-desc" class="admin-input" required>
-                
                 <label>ราคา (บาท)</label>
                 <input type="number" id="menu-price" class="admin-input" required>
-                
                 <label>หมวดหมู่</label>
-                <select id="menu-category" class="admin-input">
-                    <option value="main">จานหลัก</option>
-                    <option value="healthy">สายสุขภาพ</option>
-                </select>
-                
+                <label>หมวดหมู่ (พิมพ์ใหม่ หรือเลือกจากรายการ)</label>
+                <input type="text" id="menu-category" class="admin-input" placeholder="เช่น ของหวาน, เครื่องดื่ม, แนะนำ" list="category-list" required>
+                <datalist id="category-list">
+                    </datalist>
                 <label>ลิงก์รูปภาพ (URL หรือ ชื่อไฟล์)</label>
-                <input type="text" id="menu-image" class="admin-input" placeholder="เช่น images/food1.jpg" required>
-                
+                <input type="text" id="menu-image" class="admin-input" required>
                 <button type="submit" class="confirm-order-btn" id="submit-btn">บันทึกเมนู</button>
                 <button type="button" class="btn-cancel" id="cancel-btn" style="display: none;" onclick="resetForm()">ยกเลิกการแก้ไข</button>
             </form>
@@ -63,21 +74,28 @@
         </div>
     </div>
 
-    <script src="js/data.js"></script>
-    <script src="js/admin.js"></script>
-
     <div class="cart-modal" id="table-detail-modal" style="display: none; align-items: center;">
         <div class="cart-content" style="max-width: 500px; margin: auto; border-radius: 20px; animation: slideUp 0.3s ease;">
             <div class="cart-header">
                 <h2 id="modal-table-title">🍽️ รายการอาหาร โต๊ะ --</h2>
                 <span class="close-cart" onclick="closeTableModal()"><i class="fa-solid fa-xmark"></i> ปิด</span>
             </div>
-            
-            <div id="modal-table-items" style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto;">
-            </div>
-            
+            <div id="modal-table-items" style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto;"></div>
             <button class="confirm-order-btn" id="modal-checkout-btn">เช็คบิลโต๊ะนี้</button>
         </div>
     </div>
+
+    <div class="cart-modal" id="daily-detail-modal" style="display: none; align-items: center;">
+        <div class="cart-content" style="max-width: 600px; margin: auto; border-radius: 20px; animation: slideUp 0.3s ease;">
+            <div class="cart-header">
+                <h2 id="modal-daily-title">📅 ยอดขายประจำวันที่ --</h2>
+                <span class="close-cart" onclick="closeDailyModal()"><i class="fa-solid fa-xmark"></i> ปิด</span>
+            </div>
+            <div id="modal-daily-items" style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto; background: #f8f9fa; padding: 15px; border-radius: 12px;"></div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
 </body>
 </html>
