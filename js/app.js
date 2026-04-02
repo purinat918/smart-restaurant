@@ -29,6 +29,25 @@ function renderMenu(categoryToShow = 'all') {
     });
 }
 
+// 🎯 สร้างปุ่มหมวดหมู่อัตโนมัติจากฐานข้อมูลอาหาร
+function renderCategoryButtons() {
+    const container = document.getElementById('category-buttons-container');
+    if (!container) return;
+
+    // ดึงรายชื่อหมวดหมู่ที่ไม่ซ้ำกัน
+    const categories = [...new Set(menuData.map(item => item.category))];
+    
+    // สร้างปุ่ม "ทั้งหมด" เป็นค่าเริ่มต้น
+    let html = `<button class="cat-btn active" onclick="filterMenu('all', this)">ทั้งหมด</button>`;
+    
+    // สร้างปุ่มตามหมวดหมู่ที่มี
+    categories.forEach(cat => {
+        html += `<button class="cat-btn" onclick="filterMenu('${cat}', this)">${cat}</button>`;
+    });
+    
+    container.innerHTML = html;
+}
+
 function filterMenu(category, btn) {
     renderMenu(category);
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -156,8 +175,10 @@ function showHistory() {
     
     alert(historyText);
 }
-renderMenu();
 
+
+renderMenu();
+renderCategoryButtons();
 // ==========================================
 // 🤖 ระบบ AI Waiter (เชื่อมต่อ Google Gemini)
 // ==========================================
