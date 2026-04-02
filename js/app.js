@@ -157,3 +157,60 @@ function showHistory() {
     alert(historyText);
 }
 renderMenu();
+
+// ==========================================
+// 🤖 ระบบ AI Waiter (เชื่อมต่อ Google Gemini)
+// ==========================================
+async function askAI() {
+    const inputField = document.getElementById('ai-input-text');
+    const responseBox = document.getElementById('ai-response-box');
+    const userMessage = inputField.value;
+
+    if (userMessage.trim() === "") return alert("กรุณาพิมพ์บอก AI ก่อนครับว่าอยากทานแนวไหน");
+
+    responseBox.style.display = 'block';
+    responseBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> พนักงาน AI กำลังคิดเมนูให้คุณ...';
+
+    // 🔴 1. กุญแจ API ของคุณ (ใส่ให้แล้ว)
+    const API_KEY = "AIzaSyBOekzsR947obi8IUqFslUO91WMhpIVt1M"; 
+    
+    // 🎯 2. อัปเดตใช้ชื่อรุ่นล่าสุดที่เซิร์ฟเวอร์ Google รองรับ (gemini-2.5-flash)
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
+    const prompt = `
+        คุณคือพนักงานเสิร์ฟอัจฉริยะของร้าน The Gourmet AI 
+        นี่คือข้อมูลเมนูทั้งหมดในร้านของเรา: ${JSON.stringify(menuData)}
+        
+        ลูกค้าบอกความต้องการว่า: "${userMessage}"
+        
+        คำสั่ง: ให้คุณเลือกแนะนำเมนู 1-2 อย่างที่เหมาะสมกับลูกค้าที่สุดจากข้อมูลเมนูที่มี 
+        ตอบกลับเป็นภาษาไทยที่สุภาพ เป็นกันเอง สั้นๆ กระชับ และบอกเหตุผลสั้นๆ ว่าทำไมถึงแนะนำ (ใช้ emoji ประกอบได้)
+    `;
+
+    try {
+        const response = await fetch(URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        const data = await response.json();
+        
+        // 🎯 3. ระบบดักจับ Error: ถ้า Google ส่ง Error กลับมา ให้โชว์บนหน้าเว็บเลย (จะได้ไม่ต้องงมใน Console)
+        if (data.error) {
+            console.error("Google API Error:", data.error.message);
+            responseBox.innerHTML = `❌ ระบบ AI ขัดข้องจากฝั่ง Google: <br><span style="color: #dc3545;">${data.error.message}</span>`;
+            return;
+        }
+
+        // ดึงข้อความถ้าทำงานสำเร็จ
+        const aiReply = data.candidates[0].content.parts[0].text;
+        responseBox.innerHTML = `<strong>🤖 AI แนะนำ:</strong><br><br>${aiReply.replace(/\n/g, '<br>')}`;
+        
+    } catch (error) {
+        console.error("System Error:", error);
+        responseBox.innerHTML = '❌ ขออภัยครับ ระบบเครือข่ายขัดข้อง ลองใหม่อีกครั้งนะครับ';
+    }
+}
