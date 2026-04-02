@@ -108,7 +108,7 @@ function resetForm() {
 renderAdminMenu();
 
 // 1. ฟังก์ชันแสดงโต๊ะที่ค้างจ่าย
-// ในไฟล์ js/admin.js ค้นหาฟังก์ชันนี้แล้ววางทับครับ
+
 function renderTableManagement() {
     const list = document.getElementById('active-tables-list');
     let orders = JSON.parse(localStorage.getItem('activeOrders')) || [];
@@ -126,9 +126,13 @@ function renderTableManagement() {
 
     for (let tableNo in tables) {
         list.innerHTML += `
-            <div class="admin-menu-row" style="background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
-                <div style="flex:1; font-size: 1.2rem;"><strong>🍽️ โต๊ะ ${tableNo}</strong></div>
-                <div style="flex:1; color:#dc3545; font-weight:bold; font-size: 1.2rem;">฿${tables[tableNo].toLocaleString()}</div>
+            <div class="admin-menu-row" style="background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">
+                
+                <div style="flex:1; font-size: 1.2rem; cursor: pointer; padding: 10px 0;" onclick="viewTableDetails('${tableNo}')">
+                    <strong>🍽️ โต๊ะ ${tableNo}</strong> <span style="font-size: 0.85rem; color: #0A66C2; text-decoration: underline; margin-left: 10px;">ดูรายการ</span>
+                </div>
+                
+                <div style="color:#dc3545; font-weight:bold; font-size: 1.2rem; margin-right: 15px;">฿${tables[tableNo].toLocaleString()}</div>
                 <button class="confirm-order-btn" style="width:auto; padding:8px 20px; background:#0A66C2;" onclick="checkoutTable('${tableNo}')">เช็คบิล / รับเงิน</button>
             </div>`;
     }
