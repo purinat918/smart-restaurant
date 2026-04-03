@@ -14,23 +14,30 @@
         <a href="index.html" style="color: #00B4D8; text-decoration: none; font-weight: bold;"><i class="fa-solid fa-store"></i> ดูหน้าร้าน</a>
     </div>
 
-    <div class="admin-container">
-        <div class="admin-table-card">
-            <h2>💰 จัดการโต๊ะ & เช็คบิล</h2>
-            <div id="active-tables-list"></div>
-        </div>
-        
-        <div class="admin-table-card" style="background: #121212; color: white; text-align: center; display: flex; flex-direction: column; justify-content: center;">
-            <h2 style="color: #aaa; border-bottom: 1px solid #333; padding-bottom: 10px;">📊 สรุปรายได้ "วันนี้"</h2>
-            <h1 id="daily-income-display" style="color: #00e676; font-size: 3.5rem; margin: 20px 0;">฿ 0</h1>
-            <p style="color: #777; font-size: 0.9rem;">ระบบจะคำนวณยอดเฉพาะของวันนี้ให้อัตโนมัติ</p>
+    <div class="admin-container" style="padding-bottom: 0;">
+        <div class="admin-table-card" style="grid-column: 1 / -1; background: #121212; color: white; text-align: center; display: flex; flex-direction: column; justify-content: center; padding: 30px;">
+            <h2 style="color: #aaa; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0;">📊 สรุปรายได้ "วันนี้"</h2>
+            <h1 id="daily-income-display" style="color: #00e676; font-size: 3.5rem; margin: 15px 0;">฿ 0</h1>
+            <p style="color: #777; font-size: 0.9rem; margin-bottom: 0;">ระบบจะคำนวณยอดเฉพาะของวันนี้ให้อัตโนมัติ</p>
         </div>
     </div>
 
-    <div class="admin-container" style="margin-top: 0;">
+    <div class="admin-container" style="margin-top: 0;" id="table-management-section">
+        <div class="admin-table-card" style="grid-column: 1 / -1;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0; border: none; padding: 0;">💰 จัดการโต๊ะ & เช็คบิล</h2>
+                </div>
+            
+            <div id="active-tables-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; max-height: 55vh; overflow-y: auto; padding: 5px 10px 5px 5px;"></div>
+            
+        </div>
+    </div>
+
+    <div class="admin-container" style="margin-top: 0;" id="sales-history-section">
         <div class="admin-table-card" style="grid-column: 1 / -1;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                <h2>📈 ประวัติยอดขายย้อนหลัง</h2>
+                <h2 style="margin: 0; border: none; padding: 0;">📈 ประวัติยอดขายย้อนหลัง</h2>
                 <select id="month-selector" class="admin-input" style="width: auto; margin: 0; min-width: 200px; font-weight: bold;" onchange="renderSalesHistory()">
                     <option value="all">ดูทุกเดือน</option>
                 </select>
@@ -46,7 +53,7 @@
     </div>
 
     <div class="admin-container" style="margin-top: 0;">
-        <div class="admin-form-card">
+        <div class="admin-form-card" id="add-menu-section">
             <h2><i class="fa-solid fa-plus"></i> เพิ่ม/แก้ไข เมนู</h2>
             <form id="menu-form">
                 <input type="hidden" id="menu-id">
@@ -56,28 +63,34 @@
                 <input type="text" id="menu-desc" class="admin-input" required>
                 <label>ราคา (บาท)</label>
                 <input type="number" id="menu-price" class="admin-input" required>
-                <label>หมวดหมู่</label>
                 <label>หมวดหมู่ (พิมพ์ใหม่ หรือเลือกจากรายการ)</label>
                 <input type="text" id="menu-category" class="admin-input" placeholder="เช่น ของหวาน, เครื่องดื่ม, แนะนำ" list="category-list" required>
                 <datalist id="category-list">
-                    </datalist>
+                </datalist>
                 <label>ลิงก์รูปภาพ (URL หรือ ชื่อไฟล์)</label>
                 <input type="text" id="menu-image" class="admin-input" required>
+                
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #ccc;">
-                        <h3 style="font-size: 1rem; color: #333; margin-bottom: 10px;">⚙️ ตัวเลือกพิเศษ (เช่น ความสุก, หั่นไหม)</h3>
-                        <div id="options-container">
-                            </div>
-                        <button type="button" onclick="addOptionField()" style="background: #00B4D8; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
-                            + เพิ่มตัวเลือก
-                        </button>
+                    <h3 style="font-size: 1rem; color: #333; margin-bottom: 10px;">⚙️ ตัวเลือกพิเศษ (เช่น ความสุก, หั่นไหม)</h3>
+                    <div id="options-container">
+                    </div>
+                    <button type="button" onclick="addOptionField()" style="background: #00B4D8; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                        + เพิ่มตัวเลือก
+                    </button>
                 </div>
+                
                 <button type="submit" class="confirm-order-btn" id="submit-btn">บันทึกเมนู</button>
                 <button type="button" class="btn-cancel" id="cancel-btn" style="display: none;" onclick="resetForm()">ยกเลิกการแก้ไข</button>
             </form>
         </div>
 
         <div class="admin-table-card">
-            <h2>เมนูอาหารทั้งหมด</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0; border: none; padding: 0;">เมนูอาหารทั้งหมด</h2>
+                <select id="admin-category-filter" onchange="renderAdminMenu()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: 'Prompt'; background: #f8f9fa;">
+                    <option value="all">ทุกหมวดหมู่</option>
+                </select>
+            </div>
             <div id="admin-menu-list"></div>
         </div>
     </div>
@@ -101,6 +114,22 @@
             </div>
             <div id="modal-daily-items" style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto; background: #f8f9fa; padding: 15px; border-radius: 12px;"></div>
         </div>
+    </div>
+
+    <div style="position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; align-items: flex-end;">
+        
+        <a href="#table-management-section" style="background: #0A66C2; color: white; padding: 12px 20px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fa-solid fa-bell-concierge"></i> จัดการบิล
+        </a>
+
+        <a href="#sales-history-section" style="background: #ffc107; color: black; padding: 12px 20px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fa-solid fa-chart-line"></i> ยอดรวม
+        </a>
+
+        <a href="#add-menu-section" style="background: #28a745; color: white; padding: 12px 20px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fa-solid fa-plus"></i> เพิ่มเมนู
+        </a>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>

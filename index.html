@@ -75,6 +75,18 @@
         </div>
     </div>
 
+    <div class="cart-modal" id="customer-history-modal" style="z-index: 1000;">
+        <div class="cart-content" style="max-width: 500px;">
+            <div class="cart-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการสั่งของคุณ</h2>
+                <span class="close-cart" onclick="closeCustomerHistory()"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            <div id="customer-history-container" style="max-height: 60vh; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
+            </div>
+            <button class="confirm-order-btn" onclick="closeCustomerHistory()" style="background: #6c757d;">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 

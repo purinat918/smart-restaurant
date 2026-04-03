@@ -6,27 +6,65 @@ const cancelBtn = document.getElementById('cancel-btn');
 // 🍔 1. ระบบจัดการเมนูอาหาร (เชื่อมต่อ Cloud)
 // ==========================================
 // 🎯 ดักฟังการเปลี่ยนแปลงเมนูจาก Firebase (แทนที่ renderAdminMenu เดิม)
+let adminMenuData = []; // เก็บข้อมูลเมนูไว้กรอง
+
 listenToMenu((data) => {
+    adminMenuData = data;
     updateCategoryDatalist();
+    updateAdminCategoryFilter(); // อัปเดต Dropdown
+    renderAdminMenu();
+});
+
+// ฟังก์ชันอัปเดต Dropdown หมวดหมู่
+function updateAdminCategoryFilter() {
+    const filter = document.getElementById('admin-category-filter');
+    if(!filter) return;
+    const currentVal = filter.value;
+    const categories = [...new Set(adminMenuData.map(item => item.category))];
+    
+    let html = '<option value="all">ทุกหมวดหมู่</option>';
+    categories.forEach(cat => {
+        if(cat) html += `<option value="${cat}">${cat}</option>`;
+    });
+    filter.innerHTML = html;
+    
+    // พยายามจำค่าเดิมที่เลือกไว้
+    if(categories.includes(currentVal) || currentVal === 'all') filter.value = currentVal;
+}
+
+// ฟังก์ชันวาดเมนู (เพิ่มระบบกรอง)
+// ฟังก์ชันวาดเมนู (เพิ่มระบบกรอง และแก้รูปล้นจอแล้ว)
+function renderAdminMenu() {
     const list = document.getElementById('admin-menu-list');
+    const filterVal = document.getElementById('admin-category-filter') ? document.getElementById('admin-category-filter').value : 'all';
+    
     list.innerHTML = '';
     
-    data.forEach(item => {
-        // ใช้ item.id เป็น String (เพราะ Firebase Gen ID ให้เป็นตัวหนังสือ)
+    // กรองข้อมูลตามที่เลือกใน Dropdown
+    let filteredData = filterVal === 'all' ? adminMenuData : adminMenuData.filter(i => i.category === filterVal);
+
+    if(filteredData.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:#777; padding:20px;">ไม่พบเมนูในหมวดหมู่นี้</p>';
+        return;
+    }
+
+    filteredData.forEach(item => {
         list.innerHTML += `
             <div class="admin-menu-row">
-                <img src="${item.image}" width="60" height="60" style="border-radius:8px; object-fit:cover;">
-                <div style="flex: 1; margin-left: 15px;">
+                <img src="${item.image}" width="60" height="60" style="border-radius:8px; object-fit:cover; flex-shrink:0;" onerror="this.src='https://via.placeholder.com/60?text=IMG'">
+                
+                <div class="menu-details" style="flex: 1; margin-left: 15px;">
                     <div style="font-weight: bold;">${item.name} <span style="color:#0A66C2;">(฿${item.price})</span></div>
                     <div style="font-size: 0.85rem; color: #777;">หมวด: ${item.category}</div>
                 </div>
-                <div>
+                
+                <div class="menu-actions">
                     <button class="btn-edit" onclick="editMenu('${item.id}')"><i class="fa-solid fa-pen"></i></button>
                     <button class="btn-delete" onclick="deleteMenu('${item.id}')"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>`;
     });
-});
+}
 
 form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -38,8 +76,13 @@ form.addEventListener('submit', async function(e) {
         let optName = row.querySelector('.opt-name').value.trim();
         let optChoices = row.querySelector('.opt-choices').value.trim();
         if (optName && optChoices) {
-            // แยกตัวเลือกด้วยลูกน้ำ (,) แล้วลบช่องว่างทิ้ง
-            let choiceArray = optChoices.split(',').map(c => c.trim()).filter(c => c !== '');
+            // แยกด้วยลูกน้ำ แล้วเช็คว่ามีเครื่องหมาย + ไหม
+            let choiceArray = optChoices.split(',').map(c => {
+                let parts = c.split('+');
+                let choiceName = parts[0].trim();
+                let choicePrice = parts.length > 1 ? Number(parts[1].trim()) : 0;
+                return { name: choiceName, price: choicePrice }; // เก็บเป็นก้อนชื่อและราคา
+            }).filter(c => c.name !== '');
             menuOptions.push({ name: optName, choices: choiceArray });
         }
     });
@@ -77,10 +120,17 @@ function editMenu(id) {
     document.getElementById('menu-category').value = item.category;
     document.getElementById('menu-image').value = item.image;
 
+    // 🌟 ดึง Option กลับมาโชว์ตอนกดแก้ไข (เวอร์ชันอัปเกรด)
     document.getElementById('options-container').innerHTML = ''; 
     if (item.options && item.options.length > 0) {
         item.options.forEach(opt => {
-            addOptionField(opt.name, opt.choices.join(', '));
+            // ดึงชื่อและราคามาต่อกันด้วย + เหมือนเดิม
+            let choiceString = opt.choices.map(c => {
+                let cName = typeof c === 'string' ? c : c.name; // ดักข้อมูลเก่า
+                let cPrice = typeof c === 'string' ? 0 : (c.price || 0);
+                return cPrice > 0 ? `${cName}+${cPrice}` : cName;
+            }).join(', ');
+            addOptionField(opt.name, choiceString);
         });
     }
     
@@ -145,13 +195,28 @@ function renderTableManagement() {
     }
 
     for (let tableNo in tables) {
+        // 🌟 โครงสร้างการ์ดบิลโต๊ะแบบใหม่ (แนวตั้ง สวยเป๊ะบนมือถือ)
         list.innerHTML += `
-            <div class="admin-menu-row" style="background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap;">
-                <div style="flex:1; font-size: 1.2rem; cursor: pointer; padding: 10px 0;" onclick="viewTableDetails('${tableNo}')">
-                    <strong>🍽️ โต๊ะ ${tableNo}</strong> <span style="font-size: 0.85rem; color: #0A66C2; text-decoration: underline; margin-left: 10px;">ดูรายการ</span>
+            <div style="background: #ffffff; border: 1px solid #eaeaea; border-left: 5px solid #0A66C2; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
+                    <div style="font-size: 1.3rem; font-weight: bold; color: #121212;">
+                        🍽️ โต๊ะ ${tableNo} 
+                    </div>
+                    <div style="font-size: 0.9rem; color: #0A66C2; cursor: pointer; text-decoration: underline; font-weight: 600;" onclick="viewTableDetails('${tableNo}')">
+                        <i class="fa-solid fa-magnifying-glass"></i> ดูรายการ
+                    </div>
                 </div>
-                <div style="color:#dc3545; font-weight:bold; font-size: 1.2rem; margin-right: 15px;">฿${tables[tableNo].toLocaleString()}</div>
-                <button class="confirm-order-btn" style="width:auto; padding:8px 20px; background:#0A66C2;" onclick="checkoutTable('${tableNo}')">เช็คบิล / รับเงิน</button>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #777; font-size: 0.95rem; font-weight: 600;">ยอดที่ต้องชำระ:</span>
+                    <span style="font-size: 1.6rem; font-weight: bold; color: #dc3545;">฿${tables[tableNo].toLocaleString()}</span>
+                </div>
+
+                <button onclick="checkoutTable('${tableNo}')" style="width: 100%; background: #0A66C2; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(10, 102, 194, 0.3);">
+                    💰 เช็คบิล / รับเงิน
+                </button>
+                
             </div>`;
     }
 }
@@ -386,7 +451,7 @@ function addOptionField(name = '', choices = '') {
     
     div.innerHTML = `
         <input type="text" class="admin-input opt-name" placeholder="ชื่อหัวข้อ เช่น หั่นไหม?" value="${name}" style="flex: 1; margin: 0;">
-        <input type="text" class="admin-input opt-choices" placeholder="ตัวเลือก (คั่นด้วย , ) เช่น หั่น,ไม่หั่น" value="${choices}" style="flex: 2; margin: 0;">
+        <input type="text" class="admin-input opt-choices" placeholder="เช่น ไม่รับ, ไข่ดาว+10, ไส้กรอก+15" value="${choices}" style="flex: 2; margin: 0;">
         <button type="button" class="btn-delete" onclick="this.parentElement.remove()" style="margin: 0;">ลบ</button>
     `;
     container.appendChild(div);

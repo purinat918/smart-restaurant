@@ -237,11 +237,31 @@ body {
     .cart-item { flex-direction: column; align-items: flex-start; gap: 10px; }
     .qty-controls { width: 100%; justify-content: space-between; background: #fff; padding: 5px 10px; border-radius: 8px;}
 
-    /* หน้า Admin: จัดปุ่มในตารางให้เรียงสวยๆ ไม่ทับตัวหนังสือ */
-    .admin-menu-row { flex-direction: column; align-items: flex-start; gap: 10px; position: relative; }
-    .admin-menu-row img { margin-bottom: 5px; }
-    /* ดันปุ่ม Edit/Delete ไปไว้มุมขวาล่างของกล่อง */
-    .admin-menu-row > div:last-child { align-self: flex-end; margin-top: -30px; } 
+    /* หน้า Admin: จัดกล่องเมนูใหม่ให้สวยๆ บนมือถือ */
+    .admin-menu-row { 
+        flex-direction: row; /* ให้เรียงแนวนอนเหมือนเดิม */
+        flex-wrap: wrap; /* แต่ถ้ายาวไปให้ปัดตกลงมา */
+        align-items: center; 
+        gap: 10px; 
+        padding: 15px 10px;
+    }
+    .admin-menu-row img { 
+        width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-bottom: 0;
+    }
+    .admin-menu-row .menu-details { 
+        flex: 1; /* ให้ข้อความกินพื้นที่ที่เหลือ */
+        min-width: 150px; 
+    }
+    .admin-menu-row .menu-actions { 
+        width: 100%; /* ดันปุ่ม Edit/Delete ลงมาเป็นบรรทัดใหม่ */
+        display: flex; 
+        justify-content: flex-end; 
+        margin-top: 5px; 
+        border-top: 1px dashed #eee; 
+        padding-top: 10px;
+    }
+    
+    .confirm-order-btn { width: 100%; }
     
     /* ปุ่มเช็คบิลมือถือ */
     .confirm-order-btn { width: 100%; }
