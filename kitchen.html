@@ -11,8 +11,34 @@
     <div class="kitchen-header">
         <h1>👨‍🍳 ออเดอร์เข้าครัว (KDS)</h1>
         <div class="live-clock" id="clock">00:00:00</div>
+        <button onclick="openKitchenHistory()" style="background: #00B4D8; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติเสิร์ฟวันนี้</button>
+        
     </div>
     <div class="board" id="order-board"></div>
+
+    <div class="cart-modal" id="kitchen-history-modal" style="z-index: 1000;">
+        <div class="cart-content" style="max-width: 600px;">
+            
+            <div class="cart-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการเสิร์ฟ (วันนี้)</h2>
+                <span onclick="closeKitchenHistory()" style="font-size: 1.8rem; cursor: pointer; color: #dc3545; font-weight: bold;">&times;</span>
+            </div>
+            
+            <div id="kitchen-history-container" style="max-height: 60vh; overflow-y: auto; padding-right: 5px; margin-bottom: 20px;">
+            </div>
+
+            <button onclick="closeKitchenHistory()" style="width: 100%; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px;">
+                ปิดหน้าต่าง
+            </button>
+
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+    <script src="js/data.js"></script>
+    
     <script src="js/kitchen.js"></script>
 </body>
 </html>

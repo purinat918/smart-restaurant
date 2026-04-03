@@ -1,15 +1,59 @@
-// เมนูเริ่มต้น (Default)
-const defaultMenu = [
-    { id: 1, name: "สลัดอกไก่อะโวคาโด", desc: "โปรตีนสูง คาร์บต่ำ", price: 180, category: "healthy", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800" },
-    { id: 2, name: "สเต็กแซลมอน", desc: "แซลมอนย่างพรีเมียม", price: 350, category: "main", image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=800" },
-    { id: 3, name: "สปาเก็ตตี้เพสโต้กุ้ง", desc: "ซอสโหระพาและกุ้งตัวโต", price: 280, category: "main", image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=800" },
-    { id: 4, name: "ควินัวโบลว์รวมมิตร", desc: "ธัญพืชและผักออร์แกนิก", price: 220, category: "healthy", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800" }
-];
+// ==========================================
+// 🔥 1. เชื่อมต่อฐานข้อมูล Firebase
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyDsMhvvCPkTgOvWDJX_cLBbs3w9AjqDB3Kc",
+    authDomain: "smart-restuarant-f9f4f.firebaseapp.com",
+    projectId: "smart-restuarant-f9f4f",
+    storageBucket: "smart-restuarant-f9f4f.firebasestorage.app",
+    messagingSenderId: "994196085276",
+    appId: "1:994196085276:web:6cacac18ae2e45d3011dd9"
+};
 
-// 🌟 ดึงข้อมูลจาก LocalStorage ถ้าไม่มีให้ใช้ defaultMenu
-let menuData = JSON.parse(localStorage.getItem('restaurantMenu')) || defaultMenu;
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// ฟังก์ชันสำหรับเซฟข้อมูลลง LocalStorage (ใช้ในฝั่ง Admin)
-function saveMenuData() {
-    localStorage.setItem('restaurantMenu', JSON.stringify(menuData));
+// ==========================================
+// 🍔 2. ระบบจัดการเมนูอาหาร (Cloud Sync)
+// ==========================================
+let menuData = []; // สร้างเป็นอาเรย์ว่างไว้รอรับข้อมูลจาก Cloud
+
+// 🎯 ฟังก์ชันดักฟังเมนูจาก Cloud แบบ Real-time
+function listenToMenu(callback) {
+    db.collection("menu").onSnapshot((snapshot) => {
+        menuData = [];
+        snapshot.forEach((doc) => {
+            menuData.push({ id: doc.id, ...doc.data() });
+        });
+        console.log("🍏 อัปเดตเมนูจาก Cloud เรียบร้อย!", menuData);
+        
+        // ถ้ามีฟังก์ชันที่อยากให้ทำงานต่อหลังจากโหลดเมนูเสร็จ (เช่น renderMenu) ให้ใส่ใน callback
+        if (callback) callback(menuData);
+    });
+}
+
+// 🎯 ฟังก์ชันสำหรับ Admin: เพิ่มหรือแก้ไขเมนูขึ้น Cloud
+async function saveMenuToCloud(itemData) {
+    try {
+        if (itemData.id) {
+            // ถ้ามี ID เดิมอยู่แล้ว ให้ "อัปเดต"
+            const id = itemData.id;
+            delete itemData.id; // ลบ id ออกก่อนบันทึกเพื่อไม่ให้ซ้ำซ้อนใน data
+            await db.collection("menu").doc(id).update(itemData);
+        } else {
+            // ถ้าไม่มี ID ให้ "เพิ่มใหม่"
+            await db.collection("menu").add(itemData);
+        }
+    } catch (error) {
+        console.error("Error saving menu: ", error);
+    }
+}
+
+// 🎯 ฟังก์ชันสำหรับ Admin: ลบเมนูออกจาก Cloud
+async function deleteMenuFromCloud(id) {
+    try {
+        await db.collection("menu").doc(id).delete();
+    } catch (error) {
+        console.error("Error deleting menu: ", error);
+    }
 }

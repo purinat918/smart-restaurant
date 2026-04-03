@@ -57,12 +57,38 @@
     </div>
 
     <script>
+        // ==========================================
+        // 1. ระบบ Auto-Login (อ่านเลขโต๊ะจาก QR Code)
+        // ==========================================
+        // ดึงค่าคำว่า ?table=... จากลิงก์ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tableFromUrl = urlParams.get('table');
+
+        // ถ้ามีเลขโต๊ะแถมมากับลิงก์ (แปลว่าสแกน QR มา)
+        if (tableFromUrl) {
+            // บันทึกเลขโต๊ะลงระบบทันที
+            localStorage.setItem('customerTable', tableFromUrl);
+            // เด้งไปหน้าสั่งอาหารอัตโนมัติ โดยไม่ต้องรอกดปุ่ม!
+            window.location.href = 'index.html';
+        }
+
+
+        // ==========================================
+        // 2. ระบบ Manual-Login (สำหรับคนพิมพ์เว็บเข้ามาเอง)
+        // ==========================================
         function startOrder() {
-            const tableNo = document.getElementById('table-input').value;
-            if(tableNo.trim() === '') return alert('กรุณาใส่เลขโต๊ะก่อนครับ');
-            localStorage.setItem('customerTable', tableNo);
-            window.location.href = 'index.html'; // เปลี่ยนไปหน้า index.html ในแท็บปัจจุบัน
+            const tableInput = document.getElementById('table-input').value.trim();
+            
+            if (tableInput === "") {
+                alert("กรุณาระบุเลขโต๊ะก่อนเริ่มสั่งอาหารครับ");
+                return;
+            }
+            
+            // บันทึกเลขโต๊ะ และเปลี่ยนหน้า
+            localStorage.setItem('customerTable', tableInput);
+            window.location.href = 'index.html';
         }
     </script>
+    
 </body>
 </html>
